@@ -19,7 +19,7 @@ julia> @time FastPrimeSieve.macrobased_sieve(1_000_000_000)
 50847536
 ```
 
-Note that it count all primes in the range 1 ... 30⌈n/30⌉ - 1 at the moment, not exactly
+Note that it counts all primes in the range 1 ... 30⌈n/30⌉ - 1 at the moment, not exactly
 up to an including `n`.
 
 Next steps:
