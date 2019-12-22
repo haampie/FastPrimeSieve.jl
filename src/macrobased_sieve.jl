@@ -2,13 +2,12 @@ macro jumps(idx)
     list = []
     for i = 1 : 64
         name = Symbol(:x, i)
-        push!(list, :($(esc(idx)) === $i && $(esc(:(@goto $name)))))
+        push!(list, esc(:($idx === $i && @goto $name)))
     end
     quote $(list...) end
 end
 
 macro sieve_loop(i)
-    ps = (1, 7, 11, 13, 17, 19, 23, 29)
     ids(p) = findfirst(x -> x === p, ps)
 
     current_prime_idx::Int = ids(i)
@@ -86,9 +85,7 @@ function macrobased_sieve(n)
 
     count = 3 + length(sievers)
 
-    @inbounds while true
-        segment_index_start > last_byte && break
-
+    @inbounds while segment_index_start <= last_byte
         fill!(xs, 0xFF)
 
         segment_index_next = min(segment_index_start + segment_length, last_byte + 1)
