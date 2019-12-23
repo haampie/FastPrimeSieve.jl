@@ -11,7 +11,7 @@ Basic features:
 
 Current functionality is just counting prime numbers:
 
-```
+```julia
 using FastPrimeSieve, BenchmarkTools
 
 julia> @btime FastPrimeSieve.sieve(1_000_000_000)
