@@ -1,24 +1,13 @@
-function to_idx(x)
-    x ==  1 && return 1
-    x ==  7 && return 2
-    x == 11 && return 3
-    x == 13 && return 4
-    x == 17 && return 5
-    x == 19 && return 6
-    x == 23 && return 7
-    return 8
-end
-
-struct Siever
+mutable struct Siever
     prime_div_30::Int
 
     # byte_index is the integer range 30(byte_index - 1) up to 30byte_index - 1
-    byte_index::Base.RefValue{Int}
+    byte_index::Int
 
     # Stores the next prime number to be crossed off. 
     # If `p` is the prime number and `q` the next multiple to be stored
     # Wheel index 8 * to_idx(p % 30) * to_idx(q % 30)
-    wheel_index::Base.RefValue{Int}
+    wheel_index::Int
 
     function Siever(p::Int, segment_lo::Int)
         p² = p * p
@@ -32,7 +21,7 @@ struct Siever
             wheel = to_idx(p % 30)
             wheel_index = 8 * (wheel - 1) + wheel
 
-            return new(p ÷ 30, Base.RefValue{Int}(byte), Base.RefValue{Int}(wheel_index))
+            return new(p ÷ 30, byte, wheel_index)
         else
             # p * q will be the first number to cross off
             q, r = divrem(segment_lo, p)
@@ -57,18 +46,18 @@ struct Siever
 
             wheel_index = 8 * (to_idx(p % 30) - 1) + r_idx
             
-            return new(p ÷ 30, Base.RefValue{Int}(byte), Base.RefValue{Int}(wheel_index))
+            return new(p ÷ 30, byte, wheel_index)
         end
     end
 end
 
 function Base.show(io::IO, p::Siever)
-    print(io, 30p.prime_div_30 + ps[(p.wheel_index[] - 1) ÷ 8 + 1], " (", p.byte_index[], ", ", p.wheel_index[], ")")
+    print(io, 30p.prime_div_30 + ps[(p.wheel_index - 1) ÷ 8 + 1], " (", p.byte_index, ", ", p.wheel_index, ")")
 end
 
 function advance!(p::Siever, byte_index, wheel_index)
-    p.byte_index[] = byte_index
-    p.wheel_index[] = wheel_index
+    p.byte_index = byte_index
+    p.wheel_index = wheel_index
 end
 
 # Generates all primes for sieving up to and including n

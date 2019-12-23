@@ -1,19 +1,20 @@
 module FastPrimeSieve
 
-const bit_1 = ~(0x01 << 7)
-const bit_2 = ~(0x01 << 6)
-const bit_3 = ~(0x01 << 5)
-const bit_4 = ~(0x01 << 4)
-const bit_5 = ~(0x01 << 3)
-const bit_6 = ~(0x01 << 2)
-const bit_7 = ~(0x01 << 1)
-const bit_8 = ~(0x01 << 0)
-
 const ps = (1, 7, 11, 13, 17, 19, 23, 29)
 
+function to_idx(x)
+    x ==  1 && return 1
+    x ==  7 && return 2
+    x == 11 && return 3
+    x == 13 && return 4
+    x == 17 && return 5
+    x == 19 && return 6
+    x == 23 && return 7
+    return 8
+end
+
 include("siever.jl")
-include("handwritten_sieve.jl")
-include("macrobased_sieve.jl")
+include("sieve.jl")
 
 
 end # module

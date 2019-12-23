@@ -14,8 +14,8 @@ Current functionality is just counting prime numbers:
 ```
 using FastPrimeSieve
 
-julia> @time FastPrimeSieve.macrobased_sieve(1_000_000_000)
-  0.316057 seconds (13.73 k allocations: 368.219 KiB)
+julia> @time FastPrimeSieve.sieve(1_000_000_000)
+  0.289832 seconds (6.93 k allocations: 261.938 KiB)
 50847536
 ```
 
