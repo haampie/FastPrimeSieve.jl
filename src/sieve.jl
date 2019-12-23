@@ -126,14 +126,33 @@ macro sieve_loop(siever, byte_start, byte_next_start)
     end
 end
 
-function sieve(n)
+"""
+See https://github.com/JuliaLang/julia/issues/34059
+"""
+function vec_count_ones(xs::Vector{UInt8}, n)
+    count = 0
+    chunks = n ÷ sizeof(UInt)
+    GC.@preserve xs begin
+        ptr = Ptr{UInt}(pointer(xs))
+        for i in 1:chunks
+            count += count_ones(unsafe_load(ptr, i))
+        end
+    end
+
+    @inbounds for i in 8chunks+1:n
+        count += count_ones(xs[i])
+    end
+
+    count
+end
+
+function sieve(n; segment_length = 1024 * 32)
     # First compute all prime numbers up to approximately sqrt(n)
     sievers, segment_start = generate_sievers(n)
 
     last_byte = ceil(Int, n / 30)
 
     # Then compute the first segment index
-    segment_length = 1024 * 32 # approx L1 cache size, maybe play around a bit with this?
     segment_index_start = segment_start ÷ 30 + 1
 
     # Now create a chunk.
@@ -150,9 +169,7 @@ function sieve(n)
             @sieve_loop p segment_index_start segment_index_next
         end
 
-        for i = 1 : segment_index_next - segment_index_start
-            count += count_ones(xs[i])
-        end
+        count += vec_count_ones(xs, segment_index_next - segment_index_start)
 
         segment_index_start += segment_length
     end
