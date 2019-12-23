@@ -12,10 +12,10 @@ Basic features:
 Current functionality is just counting prime numbers:
 
 ```
-using FastPrimeSieve
+using FastPrimeSieve, BenchmarkTools
 
-julia> @time FastPrimeSieve.sieve(1_000_000_000)
-  0.289832 seconds (6.93 k allocations: 261.938 KiB)
+julia> @btime FastPrimeSieve.sieve(1_000_000_000)
+  286.892 ms (6923 allocations: 261.77 KiB)
 50847536
 ```
 

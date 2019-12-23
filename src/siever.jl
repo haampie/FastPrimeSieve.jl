@@ -69,7 +69,7 @@ function generate_sievers(n)
 
     primes = Siever[]
 
-    for i = 3:2:hihi
+    @inbounds for i = 3:2:hihi
         if is_prime[i]
             for j = i*i:2i:hi
                 is_prime[j] = false
@@ -77,7 +77,7 @@ function generate_sievers(n)
         end
     end
 
-    for i = 7:2:hi
+    @inbounds for i = 7:2:hi
         is_prime[i] && push!(primes, Siever(i, hi + 1))
     end
 
