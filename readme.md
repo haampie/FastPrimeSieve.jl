@@ -14,9 +14,9 @@ Current functionality is just counting prime numbers:
 ```julia
 using FastPrimeSieve, BenchmarkTools
 
-julia> @btime FastPrimeSieve.sieve(1_000_000_000)
-  266.732 ms (6923 allocations: 261.77 KiB)
-50847536
+julia> @btime FastPrimeSieve.sieve(2^32)
+  1.507 s (13248 allocations: 477.91 KiB)
+203280221
 ```
 
 Note that it counts all primes in the range 1 ... 30⌈n/30⌉ - 1 at the moment, not exactly
