@@ -15,7 +15,7 @@ Current functionality is just counting prime numbers:
 using FastPrimeSieve, BenchmarkTools
 
 julia> @btime FastPrimeSieve.sieve(1_000_000_000)
-  286.892 ms (6923 allocations: 261.77 KiB)
+  266.732 ms (6923 allocations: 261.77 KiB)
 50847536
 ```
 
