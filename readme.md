@@ -13,7 +13,7 @@
 ## Limitations
 Segmented sieving combined with loop unrolling while exploiting L1 cache is of course mostly
 efficient when siever primes fit at least eight times in the segment. For example, with 32KB
-of L1 cache, the siever primes should not exceed `30 num/byte * 32 * 1024 byte / 8 num = 122_880`, meaning we can efficiently sieve up to `n = 15_099_494_400 ≈ 2^34`. This package does not yet implement efficient methods that sieve in the range `2^34:∞`.
+of L1 cache, the siever primes should not exceed `30 num/byte * 32 * 1024 byte / 8 num = 122_880`, meaning we can efficiently sieve up to `n = 122_880^2 = 15_099_494_400 ≈ 2^34`. This package does not yet implement efficient methods that sieve in the range `2^34:∞`.
 
 ## Current functionality
 
