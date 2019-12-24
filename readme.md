@@ -33,7 +33,11 @@ of L1 cache, the siever primes should not exceed `30 num/byte * 32 * 1024 byte /
 
 Short term:
 - Add a sensible, simple API that allows for iterating over prime numbers etc, such that
-this package can be contributed back to https://github.com/JuliaMath/Primes.jl.
+  this package can be contributed back to https://github.com/JuliaMath/Primes.jl.
+- So far I've assumed the O(√n log log n) cost of finding siever primes is negligible, but
+  for sieving in a small, constant interval `m:n` instead of `2:n` finding siever primes
+  can be the bottleneck. It might make sense to recursively call the sieving procedure to
+  obtain the siever primes.
 
 Low-hanging fruit:
 - Multithreading (should be fairly straighforward)
