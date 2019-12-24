@@ -113,9 +113,9 @@ macro sieve_loop(siever, byte_start, byte_next_start)
     # We have to cross off 7 * 23 = 161 first, which has byte index 6. Our prime number `p`
     # is in the 2nd spoke of the wheel and q is in the 7th spoke. This means we have to jump
     # to the 7th label in the 2nd loop; that is label 8 * (2 - 1) + 7 = 15. There we cross 
-    # off the multiple (since 161 % 30 = 11 is the 3rd spoke, we and with 0b11011111). Then
-    # we move to 7 * 29 (increment the byte index accordingly), cross it off as well. And 
-    # now we enter the unrolled loop where 7 * {31, 37, ..., 59} are crossed off, then 
+    # off the multiple (since 161 % 30 = 11 is the 3rd spoke, we "and" the byte with 0b11011111)
+    # Then we move to 7 * 29 (increment the byte index accordingly), cross it off as well.
+    # And now we enter the unrolled loop where 7 * {31, 37, ..., 59} are crossed off, then 
     # 7 * {61, 67, ..., 89} etc. Lastly we reach the end of the sieving interval, we cross
     # off the remaining multiples one by one, until the byte index is passed the end.
     # When that is the case, we save at which multiple / label we exited, so we can jump
