@@ -99,7 +99,7 @@ function full_loop(wheel)
 end
 
 macro sieve_loop(siever, byte_start, byte_next_start)
-    # When crossing off p * q where `p` is the siever prime and `q` the next multiple
+    # When crossing off p * q where `p` is the siever prime and `q` the current multiplier
     # we have that p and q are {1, 7, 11, 13, 17, 19, 23, 29} mod 30.
     # For each of these 8 possibilities for `p` we create a loop, and per loop we
     # create 8 entrypoints to jump into. The first entrypoint is the unrolled loop for
