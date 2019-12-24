@@ -33,7 +33,7 @@ of L1 cache, the siever primes should not exceed `30 num/byte * 32 * 1024 byte /
 
 Short term:
 - Add a sensible, simple API that allows for iterating over prime numbers etc, such that
-package can be contributed back to https://github.com/JuliaMath/Primes.jl.
+this package can be contributed back to https://github.com/JuliaMath/Primes.jl.
 
 Low-hanging fruit:
 - Multithreading (should be fairly straighforward)
