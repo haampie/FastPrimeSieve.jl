@@ -165,9 +165,9 @@ function vec_count_ones(xs::Vector{UInt8}, n)
     count
 end
 
-sieve(to; segment_length = 1024 * 32) = sieve(0, to, segment_length = segment_length)
+countprimes(to; segment_length = 1024 * 32) = countprimes(0, to, segment_length = segment_length)
 
-function sieve(from, to; segment_length = 1024 * 32)
+function countprimes(from, to; segment_length = 1024 * 32)
     # Assume to > 5
 
     # For sieving the interval from:to we need all prime numbers up to and including ⌊√to⌋.
