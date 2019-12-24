@@ -5,15 +5,16 @@ to jump immediately into the correct loop at the correct offset.
 """
 create_jump(wheel_index, i) = esc(:($wheel_index === $i && @goto $(Symbol(:x, i))))
 
+wheel_mask(prime_mod_30)::UInt8 = ~(0x01 << (8 - to_idx(prime_mod_30)))
+
 """
 For any prime number `p` we compute its prime number index modulo 30 (here `wheel`) and we
 generate the loop that crosses of the next 8 multiples that, modulo 30, are 
 p * {1, 7, 11, 13, 17, 19, 23, 29}.
 """
 function unrolled_loop(wheel)
-    unrolled_loop_body = []
-    labelname = Symbol(:x, 8 * (wheel - 1) + 1)
     p = ps[wheel]
+    unrolled_loop_body = []
 
     # First push the stopping criterion
     push!(unrolled_loop_body, esc(:(byte_idx > unrolled_max && break)))
@@ -21,15 +22,15 @@ function unrolled_loop(wheel)
     # Cross off the 8 next multiples
     for q in ps
         div, rem = divrem(p * q, 30)
-        bit::UInt8 = ~(0x01 << (8 - to_idx(rem)))
+        bit = wheel_mask(rem)
         push!(unrolled_loop_body, esc(:(xs[byte_idx + increment * $(q - 1) + $div] &= $bit)))
     end
 
-    # Increment the index
+    # Increment the byte index to where the next / 9th multiple is located
     push!(unrolled_loop_body, esc(:(byte_idx += increment * 30 + $p)))
 
     return quote
-        $(esc(:(@label $labelname)))
+        $(esc(:(@label $(Symbol(:x, 8 * (wheel - 1) + 1)))))
         while true
             $(unrolled_loop_body...)
         end
@@ -37,8 +38,7 @@ function unrolled_loop(wheel)
 end
 
 """
-The remainder of the loop for wheel index `wheel` that crosses off one multiple and checks
-the loop condition afterwards.
+The `loop_tail`
 """
 function loop_tail(wheel)
     tail_body = []
@@ -51,20 +51,17 @@ function loop_tail(wheel)
         # Label name
         jump_idx = 8 * (wheel - 1) + j
 
-        # Current multiplier modulo 30
-        q = ps_next[j]
-
-        # And the next multiplier
+        # Current and next multiplier modulo 30
+        q_curr = ps_next[j]
         q_next = ps_next[j + 1]
 
-        div, rem = divrem(p * q, 30)
-
-        # The bit mask for crossing off p * q
-        bit::UInt8 = ~(0x01 << (8 - to_idx(rem)))
+        # Get the bit mask for crossing off p * q_curr
+        div_curr, rem_curr = divrem(p * q_curr, 30)
+        bit = wheel_mask(rem_curr)
 
         # Compute the increments for the byte index for the next multiple
-        incr_bytes = p * q_next ÷ 30 - div
-        incr_multiple = q_next - q
+        incr_bytes = p * q_next ÷ 30 - div_curr
+        incr_multiple = q_next - q_curr
 
         # Add a jump label, but skip the first one, because that is already above the
         # unrolled loop
@@ -73,7 +70,7 @@ function loop_tail(wheel)
         end
         
         push!(tail_body, esc(quote
-            # Todo: find a better way to deal with this branch
+            # Todo: this if generates an extra jump, maybe conditional moves are possible?
             if byte_idx > n_bytes
                 last_idx = $jump_idx
                 @goto out
@@ -82,7 +79,7 @@ function loop_tail(wheel)
             # Cross off the multiple
             xs[byte_idx] &= $bit
 
-            # Increment the byte indexed to the index where the next multiple is located
+            # Increment the byte index to where the next multiple is located
             byte_idx += increment * $incr_multiple + $incr_bytes 
         end))
     end
@@ -102,6 +99,27 @@ function full_loop(wheel)
 end
 
 macro sieve_loop(siever, byte_start, byte_next_start)
+    # When crossing off p * q where `p` is the siever prime and `q` the next multiple
+    # we have that p and q are {1, 7, 11, 13, 17, 19, 23, 29} mod 30.
+    # For each of these 8 possibilities for `p` we create a loop, and per loop we
+    # create 8 entrypoints to jump into. The first entrypoint is the unrolled loop for
+    # whenever we can remove 8 multiples at the same time when all 8 fit in the interval
+    # between byte_start:byte_next_start-1. Otherwise we can only remove one multiple at
+    # a time. With 8 loops and 8 entrypoints per loop we have 64 different labels, numbered
+    # x1 ... x64.
+
+    # As an example, take p = 7 as a prime number and q = 23 as the first multiplier, and
+    # assume our number line starts at 1 (so byte 1 represents 1:30, byte 2 represent 31:60). 
+    # We have to cross off 7 * 23 = 161 first, which has byte index 6. Our prime number `p`
+    # is in the 2nd spoke of the wheel and q is in the 7th spoke. This means we have to jump
+    # to the 7th label in the 2nd loop; that is label 8 * (2 - 1) + 7 = 15. There we cross 
+    # off the multiple (since 161 % 30 = 11 is the 3rd spoke, we and with 0b11011111). Then
+    # we move to 7 * 29 (increment the byte index accordingly), cross it off as well. And 
+    # now we enter the unrolled loop where 7 * {31, 37, ..., 59} are crossed off, then 
+    # 7 * {61, 67, ..., 89} etc. Lastly we reach the end of the sieving interval, we cross
+    # off the remaining multiples one by one, until the byte index is passed the end.
+    # When that is the case, we save at which multiple / label we exited, so we can jump
+    # there without computation when the next interval of the number line is sieved.
 
     jump_table = [create_jump(:wheel_idx, i) for i = 1 : 64]
     loops = [full_loop(wheel) for wheel in 1 : 8]
@@ -127,6 +145,7 @@ macro sieve_loop(siever, byte_start, byte_next_start)
 end
 
 """
+Population count of a vector of UInt8s for counting prime numbers.
 See https://github.com/JuliaLang/julia/issues/34059
 """
 function vec_count_ones(xs::Vector{UInt8}, n)
