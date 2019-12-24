@@ -2,11 +2,10 @@
 
 ## Features
 
-- Memory usage is O(2√n / log(n)), assuming O(1) primes are saved
+- Uses O(2√n / log(n)) memory when discovering primes up to n. All prime numbers up to √n are stored.
 - Skips multiples of 2, 3 and 5
 - Exploits L1 cache by processing segment by segment (currently one segment is 32KB)
-- Efficient bitpacking: every byte represents an interval of 30 integers, meaning that all
-  primes up till 1_000_000 can be sieved using just L1 cache.
+- Uses minimal memory: every byte represents an interval of 30 integers, meaning that all primes up to 1_000_000 can be sieved using just L1 cache.
 - The sieving inner loop is unrolled such that 8 multiples can be removed per iteration.
 
 ## Current functionality
