@@ -61,9 +61,7 @@ function advance!(p::Siever, byte_index, wheel_index)
 end
 
 # Generates all primes for sieving up to and including n
-function generate_sievers(n)
-    # hi should be ⌊√n⌋, but it would be nice to have hi + 1 == 0 mod 30.
-    hi = 30ceil(Int, floor(Int, √n) / 30) - 1
+function generate_sievers(hi, segment_lo)
     hihi = floor(Int, √hi)
     is_prime = trues(hi)
 
@@ -78,8 +76,8 @@ function generate_sievers(n)
     end
 
     @inbounds for i = 7:2:hi
-        is_prime[i] && push!(primes, Siever(i, hi + 1))
+        is_prime[i] && push!(primes, Siever(i, segment_lo))
     end
 
-    return primes, hi + 1
+    return primes
 end
