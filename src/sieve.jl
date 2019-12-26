@@ -1,24 +1,3 @@
-"""
-Population count of a vector of UInt8s for counting prime numbers.
-See https://github.com/JuliaLang/julia/issues/34059
-"""
-function vec_count_ones(xs::Vector{UInt8}, n)
-    count = 0
-    chunks = n ÷ sizeof(UInt)
-    GC.@preserve xs begin
-        ptr = Ptr{UInt}(pointer(xs))
-        for i in 1:chunks
-            count += count_ones(unsafe_load(ptr, i))
-        end
-    end
-
-    @inbounds for i in 8chunks+1:n
-        count += count_ones(xs[i])
-    end
-
-    count
-end
-
 countprimes(to; segment_length = 1024 * 32) = countprimes(0, to, segment_length = segment_length)
 
 function countprimes(from, to; segment_length = 1024 * 32)

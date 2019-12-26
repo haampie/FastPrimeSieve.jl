@@ -10,7 +10,8 @@
 
 ## Current functionality
 
-Counting prime numbers in an interval:
+- Counting prime numbers in a large interval. Should be 10 to 20 times faster than Primes.jl
+in the range `2^20:2^32`.
 
 ```julia
 using FastPrimeSieve, BenchmarkTools
@@ -22,6 +23,21 @@ julia> @btime FastPrimeSieve.countprimes(2^32)
 
 Note that it counts all primes in the range 1 ... 30⌈n/30⌉ - 1 at the moment, not exactly
 up to an including `n`; the answer is correct ± 16.
+
+- Efficient iteration over prime numbers in the range `7:2^20` (2, 3, and 5 are skipped).
+Should be roughly 6x faster than in Primes.jl.
+
+```julia
+using FastPrimeSieve, BenchmarkTools
+julia> @btime collect(FastPrimeSieve.SmallSieve(1_000_000))
+  528.523 μs (5 allocations: 645.98 KiB)
+78495-element Array{Int64,1}:
+      7
+     11
+      ⋮
+ 999979
+ 999983
+```
 
 ## Limitations
 Segmented sieving combined with loop unrolling while exploiting L1 cache is of course mostly
