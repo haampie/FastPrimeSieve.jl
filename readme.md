@@ -17,7 +17,7 @@ in the range `2^20:2^32`.
 using FastPrimeSieve, BenchmarkTools
 
 julia> @btime FastPrimeSieve.countprimes(2^32)
-  1.497 s (13084 allocations: 392.19 KiB)
+  1.489 s (6 allocations: 187.86 KiB)
 203280221
 ```
 

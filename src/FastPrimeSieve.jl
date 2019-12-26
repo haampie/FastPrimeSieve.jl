@@ -35,9 +35,9 @@ function to_idx(x)
 end
 
 include("generate_sieving_loop.jl")
+include("sieve_small.jl")
 include("siever.jl")
 include("sieve.jl")
-include("sieve_small.jl")
 
 
 end # module

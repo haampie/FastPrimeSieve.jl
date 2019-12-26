@@ -70,7 +70,8 @@ Base.eltype(s::SmallSieve) = Int
     return nothing
 end
 
-@inline function Base.iterate(s::SmallSieve, (x, i))
+@inline function Base.iterate(s::SmallSieve, state::Tuple{UInt8, Int})
+    x, i = state
     @inbounds while true
         x !== 0x00 && return compute_prime(x, i), (x & (x - 0x01), i)
         i === length(s.xs) && return nothing
