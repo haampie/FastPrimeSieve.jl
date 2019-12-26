@@ -13,8 +13,10 @@ function to_idx(x)
     return 8
 end
 
+include("generate_sieving_loop.jl")
 include("siever.jl")
 include("sieve.jl")
+include("sieve_small.jl")
 
 
 end # module
