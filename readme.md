@@ -14,7 +14,7 @@
 in the range `2^20:2^32`.
 
 ```julia
-using FastPrimeSieve, BenchmarkTools
+julia> using FastPrimeSieve, BenchmarkTools
 
 julia> @btime FastPrimeSieve.countprimes(2^32)
   1.489 s (6 allocations: 187.86 KiB)
@@ -25,7 +25,8 @@ julia> @btime FastPrimeSieve.countprimes(2^32)
 Should be roughly 6x faster than in Primes.jl.
 
 ```julia
-using FastPrimeSieve, BenchmarkTools
+julia> using FastPrimeSieve, BenchmarkTools
+
 julia> @btime collect(FastPrimeSieve.SmallSieve(1_000_000))
   528.523 μs (5 allocations: 645.98 KiB)
 78495-element Array{Int64,1}:
