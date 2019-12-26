@@ -59,25 +59,3 @@ function advance!(p::Siever, byte_index, wheel_index)
     p.byte_index = byte_index
     p.wheel_index = wheel_index
 end
-
-# Generates all primes for sieving up to and including n
-function generate_sievers(hi, segment_lo)
-    hihi = floor(Int, √hi)
-    is_prime = trues(hi)
-
-    primes = Siever[]
-
-    @inbounds for i = 3:2:hihi
-        if is_prime[i]
-            for j = i*i:2i:hi
-                is_prime[j] = false
-            end
-        end
-    end
-
-    @inbounds for i = 7:2:hi
-        is_prime[i] && push!(primes, Siever(i, segment_lo))
-    end
-
-    return primes
-end

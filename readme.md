@@ -17,12 +17,9 @@ in the range `2^20:2^32`.
 using FastPrimeSieve, BenchmarkTools
 
 julia> @btime FastPrimeSieve.countprimes(2^32)
-  1.507 s (13248 allocations: 477.91 KiB)
+  1.497 s (13084 allocations: 392.19 KiB)
 203280221
 ```
-
-Note that it counts all primes in the range 1 ... 30⌈n/30⌉ - 1 at the moment, not exactly
-up to an including `n`; the answer is correct ± 16.
 
 - Efficient iteration over prime numbers in the range `7:2^20` (2, 3, and 5 are skipped).
 Should be roughly 6x faster than in Primes.jl.
