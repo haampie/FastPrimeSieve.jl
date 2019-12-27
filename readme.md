@@ -10,7 +10,7 @@
 
 ## Current functionality
 
-- Counting prime numbers in a large interval. Should be 10 to 20 times faster than Primes.jl
+- Counting prime numbers in a large interval. Should be 10 to 16 times faster than Primes.jl
 in the range `2^20:2^32`.
 
 ```julia
