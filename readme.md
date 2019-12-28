@@ -25,20 +25,21 @@ julia> @btime FastPrimeSieve.countprimes(2^32)
   the number of threads).
 
 ```julia
-julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 1)
-  1.496 s (25 allocations: 189.00 KiB)
+# Ran on a cloud VM with 8 vCPUs and 128KB L1 cache
+julia> @btime FastPrimeSieve.pcountprimes(2^32, segment_length = 128 * 1024, threads = 8)
+  290.254 ms (173 allocations: 1.91 MiB)
 203280221
 
-julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 2)
-  795.066 ms (44 allocations: 335.95 KiB)
+julia> @btime FastPrimeSieve.pcountprimes(2^32, segment_length = 128 * 1024, threads = 4)
+  359.990 ms (88 allocations: 1006.61 KiB)
 203280221
 
-julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 4)
-  403.890 ms (84 allocations: 622.48 KiB)
+julia> @btime FastPrimeSieve.pcountprimes(2^32, segment_length = 128 * 1024, threads = 2)
+  710.347 ms (49 allocations: 528.06 KiB)
 203280221
 
-julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 8)
-  333.930 ms (167 allocations: 1.16 MiB)
+julia> @btime FastPrimeSieve.pcountprimes(2^32, segment_length = 128 * 1024, threads = 1)
+  1.374 s (26 allocations: 285.03 KiB)
 203280221
 ```
 
