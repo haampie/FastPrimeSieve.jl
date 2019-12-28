@@ -25,8 +25,20 @@ julia> @btime FastPrimeSieve.countprimes(2^32)
   the number of threads).
 
 ```julia
+julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 1)
+  1.496 s (25 allocations: 189.00 KiB)
+203280221
+
 julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 2)
-  843.623 ms (44 allocations: 335.86 KiB)
+  795.066 ms (44 allocations: 335.95 KiB)
+203280221
+
+julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 4)
+  403.890 ms (84 allocations: 622.48 KiB)
+203280221
+
+julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 8)
+  333.930 ms (167 allocations: 1.16 MiB)
 203280221
 ```
 
