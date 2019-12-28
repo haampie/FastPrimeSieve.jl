@@ -21,6 +21,15 @@ julia> @btime FastPrimeSieve.countprimes(2^32)
 203280221
 ```
 
+- Multithreaded prime counting in large intervals (set `JULIA_NUM_THREADS=n` where `n` is
+  the number of threads).
+
+```julia
+julia> @btime FastPrimeSieve.pcountprimes(2^32, threads = 2)
+  843.623 ms (44 allocations: 335.86 KiB)
+203280221
+```
+
 - Efficient iteration over prime numbers in the range `7:2^20` (2, 3, and 5 are skipped).
 Should be roughly 6x faster than in Primes.jl.
 
@@ -47,13 +56,7 @@ of L1 cache, the siever primes should not exceed `30 num/byte * 32 * 1024 byte /
 Short term:
 - Add a sensible, simple API that allows for iterating over prime numbers etc, such that
   this package can be contributed back to https://github.com/JuliaMath/Primes.jl.
-- So far I've assumed the O(√n log log n) cost of finding siever primes is negligible, but
-  for sieving in a small, constant interval `m:n` instead of `2:n` finding siever primes
-  can be the bottleneck. It might make sense to recursively call the sieving procedure to
-  obtain the siever primes.
-
-Low-hanging fruit:
-- Multithreading (should be fairly straighforward)
+- Automatically use the right methods for the right range
 
 Long term:
 - Improve performance in the range `2^34:∞`.

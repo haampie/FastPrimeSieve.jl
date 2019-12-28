@@ -38,6 +38,6 @@ include("generate_sieving_loop.jl")
 include("sieve_small.jl")
 include("siever.jl")
 include("sieve.jl")
-
+include("parallel.jl")
 
 end # module
