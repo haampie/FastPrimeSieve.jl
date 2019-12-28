@@ -47,18 +47,16 @@ function countprimes(from, to; segment_length = 1024 * 32)
         # Set the preceding so many bits before `from` to 0
         if segment_index_start == first_byte
             for i = 1 : 8
-                if 30 * (segment_index_start - 1) + ps[i] < from
-                    xs[1] &= wheel_mask(ps[i])
-                end
+                30 * (segment_index_start - 1) + ps[i] >= from && break
+                xs[1] &= wheel_mask(ps[i])
             end
         end
 
         # Set the remaining so many bits after `to` to 0
         if segment_index_next == last_byte + 1
-            for i = 1 : 8
-                if to < 30 * (segment_index_next - 2) + ps[i]
-                    xs[segment_curr_len] &= wheel_mask(ps[i])
-                end
+            for i = 8 : -1 : 1
+                to >= 30 * (segment_index_next - 2) + ps[i] && break
+                xs[segment_curr_len] &= wheel_mask(ps[i])
             end
         end
 

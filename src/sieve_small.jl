@@ -22,10 +22,9 @@ struct SmallSieve
         @inbounds xs[1] &= wheel_mask(1)
 
         # And ensure numbers > n are not prime since we are not considering them
-        @inbounds for i = 1 : 8
-            if n < 30 * (n_bytes - 1) + ps[i]
-                xs[n_bytes] &= wheel_mask(ps[i])
-            end
+        @inbounds for i = 8 : -1 : 1
+            n >= 30 * (n_bytes - 1) + ps[i] && break
+            xs[n_bytes] &= wheel_mask(ps[i])
         end
 
         hi = isqrt(n)
