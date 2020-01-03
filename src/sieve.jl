@@ -1,4 +1,4 @@
-countprimes(to; segment_length = 1024 * 32) = countprimes(1, to, segment_length = segment_length)
+countprimes(to; segment_length = 1024 * 32) = countprimes(1, to, segment_length)
 
 function generate_siever_primes(small_sieve::SmallSieve, segment_lo)
     xs = small_sieve.xs
@@ -14,7 +14,7 @@ function generate_siever_primes(small_sieve::SmallSieve, segment_lo)
     return sievers
 end
 
-function countprimes(from, to; segment_length = 1024 * 32)
+function countprimes(from, to, segment_length = 1024 * 32)
     # 1 is not a prime number anyway
     from = max(from, 2)
 
@@ -22,6 +22,7 @@ function countprimes(from, to; segment_length = 1024 * 32)
     last_byte = cld(to, 30)
 
     sievers = generate_siever_primes(SmallSieve(isqrt(to)), 30 * (first_byte - 1) + 1)
+    small_buffer = create_presieve_buffer()
 
     # Now create a chunk.
     xs = Vector{UInt8}(undef, segment_length)
@@ -39,13 +40,20 @@ function countprimes(from, to; segment_length = 1024 * 32)
     end
 
     @inbounds while segment_index_start <= last_byte
-        fill!(xs, 0xFF)
-
         segment_index_next = min(segment_index_start + segment_length, last_byte + 1)
         segment_curr_len = segment_index_next - segment_index_start
 
+        # Presieve
+        # fill!(xs, 0xFF)
+        apply_presieve_buffer!(xs, small_buffer, segment_index_start, segment_index_next - 1)
+
+        # @show vec_count_ones(xs, segment_curr_len)
+
         # Set the preceding so many bits before `from` to 0
         if segment_index_start == first_byte
+            if first_byte === 1
+                xs[1] = 0b11111110 # just make 1 not a prime.
+            end
             for i = 1 : 8
                 30 * (segment_index_start - 1) + ps[i] >= from && break
                 xs[1] &= wheel_mask(ps[i])
@@ -60,7 +68,9 @@ function countprimes(from, to; segment_length = 1024 * 32)
             end
         end
 
-        for (p_idx, p) in enumerate(sievers)
+        # Sieve the interval, but skip the pre-sieved primes
+        for p_idx in 5:length(sievers)
+            p            = sievers[p_idx]
             last_idx     = 0
             n_bytes      = segment_index_next - segment_index_start
             byte_idx     = p.byte_index - segment_index_start + 1

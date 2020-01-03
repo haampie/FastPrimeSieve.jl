@@ -15,8 +15,7 @@ struct SmallSieve
     function SmallSieve(n::Integer)
         # Unrolled loop without segments
         n_bytes = cld(n, 30)
-        xs = Vector{UInt8}(undef, n_bytes)
-        fill!(xs, 0xFF)
+        xs = fill(0xFF, n_bytes)
 
         # Ensure `1` is not a prime number
         @inbounds xs[1] &= wheel_mask(1)
