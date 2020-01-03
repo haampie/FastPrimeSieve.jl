@@ -21,7 +21,7 @@ function create_presieve_buffer()
     n_bytes = 7 * 11 * 13 * 17
     xs = fill(0xFF, n_bytes)
 
-    for p in (7, 11, 13, 17)
+    @inbounds for p in (7, 11, 13, 17)
         p²        = p * p
         byte_idx  = p² ÷ 30 + 1
         wheel     = to_idx(p)
