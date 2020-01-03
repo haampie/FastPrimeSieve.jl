@@ -19,7 +19,7 @@ function pcountprimes(from, to; segment_length = 1024 * 32, threads = Threads.nt
     Threads.@sync for i in Base.OneTo(threads)
         Threads.@spawn begin
             start, stop = segment(from, to, i, threads)
-            counts[i] = countprimes(start, stop, segment_length = segment_length)
+            counts[i] = countprimes(start, stop, segment_length)
         end
     end
     
