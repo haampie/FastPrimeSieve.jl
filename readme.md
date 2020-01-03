@@ -7,6 +7,8 @@
 - Exploits L1 cache by processing segment by segment (currently one segment is 32KB)
 - Uses minimal memory: every byte represents an interval of 30 integers, meaning that all primes up to 1_000_000 can be sieved using just L1 cache.
 - The sieving inner loop is unrolled such that 8 multiples can be removed per iteration.
+- Multiples of small primes 7, 11, 13, 17 are sieved modulo `2 * 3 * ... * 17 = 510510` by
+  sieving a buffer of `510510 / 30 = 17017` bytes. This buffer is then repeatedly copied over.
 
 ## Current functionality
 
