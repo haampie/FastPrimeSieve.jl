@@ -4,23 +4,14 @@ const ps = (1, 7, 11, 13, 17, 19, 23, 29)
 
 """
 Population count of a vector of UInt8s for counting prime numbers.
-See https://github.com/JuliaLang/julia/issues/34059
 """
-function vec_count_ones(xs::Vector{UInt8}, n = length(xs))
+function vec_count_ones(xs::Vector{UInt8})
     count = 0
-    chunks = n ÷ sizeof(UInt)
-    GC.@preserve xs begin
-        ptr = Ptr{UInt}(pointer(xs))
-        for i in 1:chunks
-            count += count_ones(unsafe_load(ptr, i))
-        end
+    xs64 = reinterpret(UInt, xs)
+    @simd for x in xs64
+        count += count_ones(x)
     end
-
-    @inbounds for i in 8chunks+1:n
-        count += count_ones(xs[i])
-    end
-
-    count
+    return count
 end
 
 function to_idx(x)
