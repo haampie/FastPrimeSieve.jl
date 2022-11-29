@@ -7,17 +7,17 @@ Population count of a vector of UInt8s for counting prime numbers.
 """
 function vec_count_ones(xs::Vector{UInt8}, n = length(xs))
     count = 0
-    # Multiple of 8 less than or equal to n, 8 being `sizeof(UInt64) ÷ sizeof(UInt8)`.
-    n8 = n & -8
+    # Multiple of `sizeof(UInt64)` less than or equal to n
+    bytes = n & -sizeof(UInt64)
     # Running `count_ones` on `UInt64` can be vectorised much better than on
     # `UInt8`.  Let's reinterpret as much as possible of the vector as `UInt64`,
     # on the rest runs `count_ones` without packing.
-    xs64 = reinterpret(UInt64, @inbounds(@view(xs[1:n8])))
+    xs64 = reinterpret(UInt64, @inbounds(@view(xs[1:bytes])))
     @simd for x in xs64
         count += count_ones(x)
     end
     # Remainder of the vector which doesn't fit into a `UInt64`.
-    @simd for idx in (n8 + 1):n
+    @simd for idx in (bytes + 1):n
         count += @inbounds count_ones(xs[idx])
     end
     return count
