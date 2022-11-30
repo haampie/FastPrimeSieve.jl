@@ -9,9 +9,13 @@ function vec_count_ones(xs::Vector{UInt8}, n = length(xs))
     count = 0
     # Multiple of `sizeof(UInt64)` less than or equal to n
     bytes = n & -sizeof(UInt64)
-    # Running `count_ones` on `UInt64` can be vectorised much better than on
-    # `UInt8`.  Let's reinterpret as much as possible of the vector as `UInt64`,
-    # on the rest runs `count_ones` without packing.
+    # Explanation: running `count_ones` on `UInt64` is faster than on `UInt8` because
+    # `count_ones(::UInt8)` converts the output to `Int`, which kills the performance of
+    # `count_ones`.  One could think of making `count::UInt8` and casting
+    # `count_ones(x)%UInt8`, but that'd make it impossible to work on vectors with more than
+    # 31 elements without overflowing, so we have to work with the wider type to get the
+    # best performance and still get meaningful results.  Let's reinterpret as much as
+    # possible of the vector as `UInt64`, on the rest runs `count_ones` without packing.
     xs64 = reinterpret(UInt64, @inbounds(@view(xs[1:bytes])))
     @simd for x in xs64
         count += count_ones(x)
